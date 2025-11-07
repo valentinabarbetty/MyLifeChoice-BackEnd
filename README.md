@@ -12,3 +12,6 @@ python3 manage.py migrate
 
 #Execute server
 python3 manage.py runserver
+
+#Update requirements.txt
+pip freeze > requirements.txt
