@@ -18,9 +18,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-
-GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -158,16 +155,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-import os
-import firebase_admin
-from firebase_admin import credentials
-
-# 🔹 Ruta absoluta al archivo firebase-key.json
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FIREBASE_CRED_PATH = os.path.join(BASE_DIR, "firebase-key.json")
-
-if not firebase_admin._apps:
-    cred = credentials.Certificate(FIREBASE_CRED_PATH)
-    firebase_admin.initialize_app(cred)
-
