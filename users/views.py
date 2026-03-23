@@ -104,31 +104,31 @@ class AssignGuideByEmailView(APIView):
 
 class GoogleLoginView(APIView):
     def post(self, request):
-        token = request.data.get("token")
-        if not token:
-            return Response({"error": "Token no proporcionado"}, status=status.HTTP_400_BAD_REQUEST)
+        email = request.data.get("email")
+        name = request.data.get("name")
+
+        if not email:
+            return Response({"error": "Email requerido"}, status=400)
+
+        # 🔥 buscar usuario
         try:
-            decoded = firebase_auth.verify_id_token(token)
-            email = decoded.get("email")
-            name = decoded.get("name", email.split("@")[0])
-            
-            user, created = User.objects.get_or_create(
+            user = User.objects.get(email=email)
+            created = False
+        except User.DoesNotExist:
+            user = User.objects.create(
                 email=email,
-                defaults={"nickname": name, "password": ""}
+                nickname=name or email.split("@")[0],
+                password=""
             )
+            created = True
 
-            serializer = UserSerializer(user)
-            return Response({
-                "user": serializer.data,
-                "created": created,
-                "message": "Login con Google exitoso"
-            })
-        except Exception as e:
-            print("Error al verificar token:", e)
-            return Response({"error": "Token inválido o expirado"}, status=status.HTTP_401_UNAUTHORIZED)
-
-
-
+        return Response({
+            "message": "Login con Google exitoso",
+            "created": created,
+            "user_id": user.user_id,
+            "email": user.email,
+            "nickname": user.nickname
+        })
 
 class UpdateNicknameView(APIView):
     def put(self, request):
