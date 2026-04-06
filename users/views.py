@@ -13,7 +13,8 @@ from firebase_admin import auth as firebase_auth
 # --- Registro y gestión de usuarios ---
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+
+
 
 
 
@@ -110,7 +111,6 @@ class GoogleLoginView(APIView):
         if not email:
             return Response({"error": "Email requerido"}, status=400)
 
-        # 🔥 buscar usuario
         try:
             user = User.objects.get(email=email)
             created = False
@@ -158,5 +158,50 @@ class UpdateNicknameView(APIView):
         except User.DoesNotExist:
             return Response(
                 {"error": "Usuario no encontrado"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+class CheckIntroStatusView(APIView):
+    def get(self, request, user_id):
+        try:
+            user = User.objects.get(user_id=user_id)
+
+            has_intro = bool(user.guide_id)
+
+            return Response({
+                "has_intro": has_intro
+            }, status=status.HTTP_200_OK)
+
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+class CompleteIntroView(APIView):
+    def post(self, request, user_id):
+        try:
+            user = User.objects.get(user_id=user_id)
+
+            guide_id = request.data.get("guide_id")
+
+            if not guide_id:
+                return Response(
+                    {"error": "guide_id is required"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            user.guide_id = guide_id
+            user.save()
+
+            return Response(
+                {"message": "Intro completed"},
+                status=status.HTTP_200_OK
+            )
+
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User not found"},
                 status=status.HTTP_404_NOT_FOUND
             )
