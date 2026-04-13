@@ -26,8 +26,7 @@ def get_user_progress(request, user_id):
         "visited": visited
     })
 
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+
 from rest_framework import status
 from .models import Progress
 from .serializers import ProgressSerializer
@@ -67,3 +66,30 @@ def save_progress(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+import json
+
+@api_view(['GET'])
+def get_user_feedback(request, user_id):
+
+    progresses = Progress.objects.filter(
+        user_id=user_id,
+        state='done'
+    )
+
+    result = []
+
+    for p in progresses:
+        try:
+            feedback_json = json.loads(p.feedback) if p.feedback else {}
+        except:
+            feedback_json = {}
+
+        result.append({
+            "career": p.career.name if hasattr(p.career, 'name') else str(p.career),
+            "career_id": p.career.career_id,
+            "score": feedback_json.get("totalScore", 0),
+            "answers": feedback_json.get("answers", [])
+        })
+
+    return Response(result)
