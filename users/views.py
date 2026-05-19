@@ -13,6 +13,7 @@ from firebase_admin import auth as firebase_auth
 # --- Registro y gestión de usuarios ---
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
 
