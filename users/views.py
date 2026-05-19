@@ -162,23 +162,14 @@ class UpdateNicknameView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-
 class CheckIntroStatusView(APIView):
     def get(self, request, user_id):
         try:
             user = User.objects.get(user_id=user_id)
-
-            has_intro = bool(user.guide_id)
-
-            return Response({
-                "has_intro": has_intro
-            }, status=status.HTTP_200_OK)
-
+            return Response({"has_intro": user.intro_done}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
-            return Response(
-                {"error": "User not found"},
-                status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        
 
 class CompleteIntroView(APIView):
     def post(self, request, user_id):
@@ -194,6 +185,7 @@ class CompleteIntroView(APIView):
                 )
 
             user.guide_id = guide_id
+            user.intro_done = True 
             user.save()
 
             return Response(

@@ -21,6 +21,7 @@ class User(models.Model):
     password = models.CharField(max_length=128)
     player_type = models.ForeignKey(PlayerType, on_delete=models.CASCADE, related_name='users', null=True, blank=True)
     guide = models.ForeignKey(Guide, on_delete=models.CASCADE, related_name='users', null=True, blank=True)
+    intro_done = models.BooleanField(default=False)
     def __str__(self):
         return self.nickname
 
