@@ -33,7 +33,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Application definition
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "https://mylifechoice.vercel.app/",
+    "https://mylifechoice.vercel.app",
 ]
 INSTALLED_APPS = [
     'django.contrib.admin',
